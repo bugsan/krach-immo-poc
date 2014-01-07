@@ -12,7 +12,7 @@ http://www.springframework.org/schema/batch http://www.springframework.org/schem
 			<batch:tasklet>
 				<batch:chunk commit-interval="10">
 					<batch:reader>
-						<bean class="fr.krachimmo.web.scrap.SelogerUriItemReader" p:query="idtypebien=1&amp;cp=75&amp;idtt=2" />
+						<bean class="fr.krachimmo.web.scrap.SelogerUriItemReader" scope="step" p:query="#{jobParameters['query']}" />
 					</batch:reader>
 					<batch:writer>
 						<bean class="fr.krachimmo.web.scrap.SysoutItemWriter" />
