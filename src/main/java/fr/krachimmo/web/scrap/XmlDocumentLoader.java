@@ -15,7 +15,7 @@ public class XmlDocumentLoader implements DocumentLoader {
 
 	@Override
 	public Document loadDocument(InputStream inputStream, String charset) throws Exception {
-		StreamSource source = charset != null ?
+		StreamSource source = (charset != null) ?
 				new StreamSource(new InputStreamReader(inputStream, charset)) :
 				new StreamSource(inputStream);
 		DOMResult result = new DOMResult();

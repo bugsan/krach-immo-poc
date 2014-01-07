@@ -13,9 +13,9 @@ public class HtmlDocumentLoader implements DocumentLoader {
 	public Document loadDocument(InputStream inputStream, String charset) throws Exception {
 		HtmlCleaner cleaner = new HtmlCleaner();
 		cleaner.getProperties().setNamespacesAware(false);
-		TagNode rootNode = (charset != null ?
+		TagNode rootNode = (charset != null) ?
 				cleaner.clean(inputStream, charset) :
-				cleaner.clean(inputStream));
+				cleaner.clean(inputStream);
 		return new DomSerializer(cleaner.getProperties()).createDOM(rootNode);
 	}
 }

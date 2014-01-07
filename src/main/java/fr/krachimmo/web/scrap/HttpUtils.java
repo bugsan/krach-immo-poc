@@ -33,7 +33,6 @@ public final class HttpUtils {
 	public static boolean isCompressedResponse(ClientHttpResponse response) {
 		List<String> contentEncodings = response.getHeaders().get("Content-Encoding");
 		if (contentEncodings != null && contentEncodings.size() > 0) {
-			System.out.println("compressed");
 			return contentEncodings.get(0).equals("gzip");
 		}
 		return false;
