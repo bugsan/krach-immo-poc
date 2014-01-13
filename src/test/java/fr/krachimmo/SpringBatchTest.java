@@ -35,14 +35,11 @@ public class SpringBatchTest {
 	public void execute() throws Exception {
 		JobExecution execution = this.jobLauncher.run(this.job, new JobParametersBuilder()
 			.addString("query", "idtypebien=1&cp=75&idtt=2")
+			.addString("output", "file:annonce.csv")
 			.toJobParameters());
-
-		Thread.sleep(5000);
-		execution.stop();
-		Thread.sleep(5000);
-		execution = this.jobLauncher.run(this.job, new JobParametersBuilder()
-			.addString("query", "idtypebien=1&cp=75&idtt=2")
-			.toJobParameters());
+		while (execution.isRunning()) {
+			Thread.sleep(1000);
+		}
 	}
 }
 @Configuration

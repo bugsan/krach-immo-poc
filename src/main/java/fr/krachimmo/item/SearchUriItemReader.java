@@ -1,4 +1,4 @@
-package fr.krachimmo.web.scrap;
+package fr.krachimmo.item;
 
 import static fr.krachimmo.web.scrap.XmlUtils.xpath;
 
@@ -18,14 +18,18 @@ import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 
+import fr.krachimmo.web.scrap.DocumentMapper;
+import fr.krachimmo.web.scrap.ScrapOperations;
+import fr.krachimmo.web.scrap.ScrapTemplate;
+
 /**
  *
  * @author Sébastien Chatel
  * @since 07 January 2014
  */
-public class SelogerUriItemReader implements ItemStreamReader<URI> {
+public class SearchUriItemReader implements ItemStreamReader<URI> {
 
-	private static final Log log = LogFactory.getLog(SelogerUriItemReader.class);
+	private static final Log log = LogFactory.getLog(SearchUriItemReader.class);
 
 	private static final String SEARCH_URL = "http://www.seloger.com/recherche.htm?";
 
