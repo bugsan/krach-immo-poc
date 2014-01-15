@@ -23,8 +23,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 07 January 2014
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes={BatchConfig.class})
+@ContextConfiguration(classes={BatchConfig.class,LocalPersistanceConfig.class})
 @DirtiesContext
 public class SpringBatchTest {
 	@Autowired

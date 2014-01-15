@@ -23,9 +23,11 @@ http://www.springframework.org/schema/batch http://www.springframework.org/schem
 	<bean id="resultPageProcessor" class="fr.krachimmo.item.SearchUriItemProcessor" />
 	<bean id="resultPageWriter" class="fr.krachimmo.item.ResultPageToAnnoncesItemWriter" scope="step"
 		p:delegate-ref="annonceWriter" />
+	<!--
 	<bean id="annonceWriter" class="org.springframework.batch.item.file.FlatFileItemWriter" scope="step"
 		p:encoding="iso-8859-1" p:lineAggregator-ref="annonceLineAggregator"
 		p:resource="#{jobParameters['output']}" />
 	<bean id="annonceLineAggregator" class="fr.krachimmo.item.AnnonceLineAggregator" />
+	-->
 
 </beans>
