@@ -86,6 +86,7 @@ public class HomeController {
 		sb.append(']');
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
+		headers.add("Cache-Control", "public, max-age=" + (60*10));
 		return new ResponseEntity<String>(sb.toString(), headers, HttpStatus.OK);
 	}
 

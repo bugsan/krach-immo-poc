@@ -13,25 +13,23 @@
         var data = new google.visualization.DataTable();
         data.addColumn('number', 'Surface');
         data.addColumn('number', 'Price');
-        $.ajax({
-        	type: 'GET',
-        	url: "/api/annonces",
-        	async: false,
-        	dataType: 'json'
-        }).done(function(json) {
-        	data.addRows(json);
-        }).fail(function() {
-        	alert('fail');
-        });
-
         var options = {
           title: 'Surface/Price',
           hAxis: {title: 'Surface', minValue: 0, maxValue: 150},
           vAxis: {title: 'Price', minValue: 0, maxValue: 10000}
         };
-
         var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
+
+        $.ajax({
+        	type: 'GET',
+        	url: "/api/annonces",
+        	dataType: 'json'
+        }).done(function(json) {
+        	data.addRows(json);
+        	chart.draw(data, options);
+        }).fail(function() {
+        	alert('fail');
+        });
       }
     </script>
 </head>
