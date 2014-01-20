@@ -8,6 +8,11 @@ import org.mockito.stubbing.Answer;
 
 import com.google.appengine.api.datastore.Entity;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 20 January 2014
+ */
 public final class HomeControllerTestFixtures {
 	private HomeControllerTestFixtures() { }
 

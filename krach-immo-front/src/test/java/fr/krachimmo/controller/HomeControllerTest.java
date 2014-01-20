@@ -15,6 +15,11 @@ import com.google.appengine.api.datastore.Query;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.ApiProxy.Environment;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 20 January 2014
+ */
 public class HomeControllerTest {
 
 	private Environment environment = mock(Environment.class);
