@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number', 'Surface');
+        data.addColumn('number', 'Price');
+        $.ajax({
+        	type: 'GET',
+        	url: "/api/annonces",
+        	async: false,
+        	dataType: 'json'
+        }).done(function(json) {
+        	data.addRows(json);
+        }).fail(function() {
+        	alert('fail');
+        });
+
+        var options = {
+          title: 'Surface/Price',
+          hAxis: {title: 'Surface', minValue: 0, maxValue: 150},
+          vAxis: {title: 'Price', minValue: 0, maxValue: 10000}
+        };
+
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+</head>
+<body>
+	<div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
