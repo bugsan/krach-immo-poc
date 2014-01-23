@@ -9,6 +9,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.search.SearchService;
+import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 
@@ -32,5 +34,9 @@ public class WebConfig {
 	@Bean
 	MemcacheService memcacheService() {
 		return MemcacheServiceFactory.getMemcacheService();
+	}
+	@Bean
+	SearchService searchService() {
+		return SearchServiceFactory.getSearchService();
 	}
 }
