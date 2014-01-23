@@ -21,6 +21,11 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchService;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 23 January 2014
+ */
 @Controller
 public class SearchController {
 
