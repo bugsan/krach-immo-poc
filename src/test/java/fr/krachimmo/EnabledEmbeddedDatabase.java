@@ -18,7 +18,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Import(EmbeddedDatabaseBeanDefinitionRegistrar.class)
 public @interface EnabledEmbeddedDatabase {
 
-	String script() default "";
+	String value() default "";
 
 	EmbeddedDatabaseType type() default EmbeddedDatabaseType.HSQL;
 }

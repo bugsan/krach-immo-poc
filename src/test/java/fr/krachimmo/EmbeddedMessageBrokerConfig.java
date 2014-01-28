@@ -6,6 +6,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 
 /**
  *
@@ -27,5 +28,9 @@ public class EmbeddedMessageBrokerConfig {
 		brokerService.getSystemUsage().getTempUsage().setLimit(1024L * 1024L); // 1MB
 		brokerService.getSystemUsage().getMemoryUsage().setLimit(1024L * 1024L * 64L); // 64MB
 		return brokerService;
+	}
+	@Bean
+	JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
+		return new JmsTemplate(connectionFactory);
 	}
 }
