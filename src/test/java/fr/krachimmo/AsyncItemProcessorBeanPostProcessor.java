@@ -21,7 +21,7 @@ public class AsyncItemProcessorBeanPostProcessor implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		log.info("post processing bean '" + beanName + "'");
+		log.info("post processing bean '" + beanName + "' " + bean);
 		return bean;
 	}
 }
