@@ -30,7 +30,7 @@ public class EmbeddedMessageBrokerConfig {
 		return brokerService;
 	}
 	@Bean
-	JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
+	public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
 		return new JmsTemplate(connectionFactory);
 	}
 }
