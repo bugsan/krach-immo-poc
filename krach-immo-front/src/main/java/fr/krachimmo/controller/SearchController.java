@@ -1,5 +1,7 @@
 package fr.krachimmo.controller;
 
+import static fr.krachimmo.util.SearchUtils.toJson;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,6 @@ import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Query;
-import com.google.appengine.api.search.Results;
-import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchService;
 
 /**
@@ -50,28 +50,6 @@ public class SearchController {
 	@ResponseBody
 	public String search(@RequestParam("q") String query) {
 		Index index = this.searchService.getIndex(IndexSpec.newBuilder().setName("Foo").build());
-		Results<ScoredDocument> results = index.search(Query.newBuilder().build(query));
-		StringBuilder json = new StringBuilder(256);
-		json.append("{\"documents\":[");
-		int docCount = 0;
-		for (ScoredDocument document : results) {
-			if (docCount > 0) {
-				json.append(',');
-			}
-			json.append("{\"id\":\"" + document.getId() + "\"");
-			int fieldCount = 0;
-			for (Field field : document.getFields()) {
-				if (fieldCount > 0) {
-					json.append(',');
-				}
-				json.append("\"" + field.getName() + "\":\"" + field.getText() + "\"");
-				fieldCount++;
-			}
-			json.append('}');
-			docCount++;
-		}
-		json.append("]}");
-		return json.toString();
+		return toJson(index.search(Query.newBuilder().build(query)));
 	}
-
 }
