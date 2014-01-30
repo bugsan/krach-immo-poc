@@ -16,7 +16,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Import(EmbeddedDatabaseBeanDefinitionRegistrar.class)
-public @interface EnabledEmbeddedDatabase {
+public @interface EnableEmbeddedDatabase {
 
 	String value() default "";
 

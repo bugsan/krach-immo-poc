@@ -22,7 +22,7 @@ public class EmbeddedDatabaseBeanDefinitionRegistrar implements ImportBeanDefini
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder bean = BeanDefinitionBuilder.rootBeanDefinition(EmbeddedDatabaseFactoryBean.class);
-		Map<String, Object> attrs = importingClassMetadata.getAnnotationAttributes(EnabledEmbeddedDatabase.class.getName());
+		Map<String, Object> attrs = importingClassMetadata.getAnnotationAttributes(EnableEmbeddedDatabase.class.getName());
 		String sqlScript = (String) attrs.get("value");
 		if (StringUtils.hasText(sqlScript)) {
 			ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();

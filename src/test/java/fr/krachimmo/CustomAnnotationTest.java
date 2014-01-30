@@ -36,7 +36,7 @@ public class CustomAnnotationTest {
 	@Configuration
 	@EnableAsyncItemProcessor
 	@EnableEmbeddedMessageBroker
-	@EnabledEmbeddedDatabase(
+	@EnableEmbeddedDatabase(
 			"create table torrent (id integer not null, name varchar(128) not null);\n" +
 			"alter table torrent add constraint torrent_pk primary key (id);\n" +
 			"create index torrent_name_idx on torrent (name);\n" +
