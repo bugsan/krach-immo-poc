@@ -19,6 +19,10 @@
 		</plugins>
 	</build>
 
+	<properties>
+		<spring.version>4.0.1.RELEASE</spring.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -33,7 +37,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>4.0.0.RELEASE</version>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.appengine.tools</groupId>
