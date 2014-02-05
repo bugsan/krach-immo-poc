@@ -1,18 +1,10 @@
 package fr.krachimmo.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.search.SearchService;
-import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import fr.krachimmo.annotation.EnableAppEngine;
 
 /**
  *
@@ -22,21 +14,7 @@ import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 @Configuration
 @ComponentScan(basePackages="fr.krachimmo")
 @EnableWebMvc
+@EnableAppEngine
 public class WebConfig {
-	@Bean
-	GcsService storageService() {
-		return GcsServiceFactory.createGcsService();
-	}
-	@Bean
-	DatastoreService datastoreService() {
-		return DatastoreServiceFactory.getDatastoreService();
-	}
-	@Bean
-	MemcacheService memcacheService() {
-		return MemcacheServiceFactory.getMemcacheService();
-	}
-	@Bean
-	SearchService searchService() {
-		return SearchServiceFactory.getSearchService();
-	}
+
 }
