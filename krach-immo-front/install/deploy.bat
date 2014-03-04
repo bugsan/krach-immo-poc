@@ -1,3 +1,3 @@
 @echo off
 
-%GAE_HOME%\bin\appcfg -p localhost:3128 update ..\target\krach-immo-front-0.0.1-SNAPSHOT
+"%GAE_HOME%\bin\appcfg" update ..\target\krach-immo-front-0.0.1-SNAPSHOT

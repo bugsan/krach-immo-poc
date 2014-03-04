@@ -44,7 +44,7 @@ public class HomeController {
 	@Autowired
 	MemcacheService memcacheService;
 
-	@RequestMapping("/")
+//	@RequestMapping("/")
 	public ResponseEntity<String> home(@RequestParam String filename) throws IOException {
 		Entity entity = new Entity("Toto");
 		entity.setUnindexedProperty("filename", filename);
@@ -55,7 +55,7 @@ public class HomeController {
 		return new ResponseEntity<String>(entity.getKey().toString(), headers, HttpStatus.OK);
 	}
 
-//	@RequestMapping("/")
+	@RequestMapping("/")
 	public ResponseEntity<String> home2(@RequestParam String filename) throws IOException {
 		log.info("storing file");
 		GcsFileOptions options = new GcsFileOptions.Builder().mimeType("text/plain").build();
