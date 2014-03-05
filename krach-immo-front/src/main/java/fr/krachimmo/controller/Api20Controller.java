@@ -5,6 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 04 March 2014
+ */
 @Controller
 @RequestMapping(headers="X-Api-Version=2.0", produces="application/json")
 public class Api20Controller {
