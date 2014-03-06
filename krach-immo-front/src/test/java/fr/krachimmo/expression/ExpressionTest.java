@@ -21,6 +21,5 @@ public class ExpressionTest {
 
 		assertEquals(2, e5.eval(context));
 		assertEquals(3, new Sqrt(new Const(9)).eval(context));
-		assertEquals(3, new Pow(new Const(9), new Div(new Const(1), new Const(2))).eval(context));
 	}
 }
