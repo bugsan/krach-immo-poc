@@ -20,9 +20,16 @@ public class AppengineFileOutputStream extends OutputStream {
 
 	private WritableByteChannel channel;
 
+	private final boolean finallyOnClose;
+
 	public AppengineFileOutputStream(FileService fileService, AppEngineFile file) throws IOException {
+		this(fileService, file, false);
+	}
+
+	public AppengineFileOutputStream(FileService fileService, AppEngineFile file, boolean finallyOnClose) throws IOException {
 		this.fileService = fileService;
 		this.file = file;
+		this.finallyOnClose = finallyOnClose;
 		openChannel();
 	}
 
@@ -67,10 +74,12 @@ public class AppengineFileOutputStream extends OutputStream {
 				throw ex;
 			}
 		}
+		if (this.finallyOnClose) {
+			closeFinally();
+		}
 	}
 
 	public void closeFinally() throws IOException {
-		close();
 		this.fileService.openWriteChannel(this.file, true).closeFinally();
 	}
 

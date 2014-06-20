@@ -21,7 +21,7 @@ public class SelogerScrapJobController {
 
 	@RequestMapping("/seloger-scrap-job")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void start() {
+	public void start() throws Exception {
 		this.selogerScrapJob.execute();
 	}
 }

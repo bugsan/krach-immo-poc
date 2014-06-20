@@ -5,7 +5,6 @@ import java.util.concurrent.Future;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
 import fr.krachimmo.core.http.client.AsyncClientHttpRequest;
@@ -35,8 +34,11 @@ public class ScrapUtils {
 
 	public static <T> T extractResponse(ClientHttpResponse response, ClientHttpResponseExtractor<T> extractor) {
 		try {
-			if (response.getStatusCode() != HttpStatus.OK) {
+			if (response.getRawStatusCode() >= 500) {
 				throw new IllegalStateException("Invalid http status code " + response.getRawStatusCode());
+			}
+			else if (response.getRawStatusCode() >= 300) {
+				return null;
 			}
 			return extractor.extract(response);
 		}

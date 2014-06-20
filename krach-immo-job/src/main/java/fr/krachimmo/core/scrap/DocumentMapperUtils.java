@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
  */
 public class DocumentMapperUtils {
 
-	private static final XPath xpath = XPathFactory.newInstance().newXPath();
+	private static final XPath xpath = newXPath();
 
 	public static XPath newXPath(final String... namespaces) {
 		XPath xpath = XPathFactory.newInstance().newXPath();
@@ -40,12 +40,15 @@ public class DocumentMapperUtils {
 						this.uriToPrefix.put(uri, prefix);
 					}
 				}
+				@Override
 				public Iterator<?> getPrefixes(String namespaceURI) {
 					return this.prefixToURI.keySet().iterator();
 				}
+				@Override
 				public String getPrefix(String namespaceURI) {
 					return this.uriToPrefix.get(namespaceURI);
 				}
+				@Override
 				public String getNamespaceURI(String prefix) {
 					return this.prefixToURI.get(prefix);
 				}

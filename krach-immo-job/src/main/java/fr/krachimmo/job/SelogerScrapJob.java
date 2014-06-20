@@ -7,5 +7,5 @@ package fr.krachimmo.job;
  */
 public interface SelogerScrapJob {
 
-	void execute();
+	void execute() throws Exception;
 }
