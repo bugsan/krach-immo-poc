@@ -1,0 +1,11 @@
+# Eclipse artifacts
+.classpath
+.project
+.settings
+
+# Maven artifacts
+target/
+
+# Gradle artifacts
+.gradle**
+build/

@@ -1,0 +1,87 @@
+package fr.krachimmo.core.store;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileService;
+import com.google.apphosting.api.ApiProxy.ApplicationException;
+
+@SuppressWarnings("deprecation")
+public class AppengineFileOutputStream extends OutputStream {
+
+	private static final int FILE_CLOSED = 10;
+
+	private final FileService fileService;
+
+	private final AppEngineFile file;
+
+	private WritableByteChannel channel;
+
+	public AppengineFileOutputStream(FileService fileService, AppEngineFile file) throws IOException {
+		this.fileService = fileService;
+		this.file = file;
+		openChannel();
+	}
+
+	@Override
+	public void write(int b) throws IOException {
+		write(new byte[] {(byte) (b & 0xff)});
+	}
+
+	@Override
+	public void write(byte[] b) throws IOException {
+		write(b, 0, b.length);
+	}
+
+	@Override
+	public void write(byte[] b, int off, int len) throws IOException {
+		try {
+			doWrite(ByteBuffer.wrap(b, off, len));
+		}
+		catch (IOException ex) {
+			if (fileHasBeenClosedByTimeout(ex)) {
+				openChannel();
+				doWrite(ByteBuffer.wrap(b, off, len));
+			}
+			else {
+				throw ex;
+			}
+		}
+	}
+
+	private void doWrite(ByteBuffer buffer) throws IOException {
+		System.out.println("Writing " + buffer.remaining() + " bytes to cloud file");
+		this.channel.write(buffer);
+	}
+
+	@Override
+	public void close() throws IOException {
+		try {
+			this.channel.close();
+		}
+		catch (IOException ex) {
+			if (!fileHasBeenClosedByTimeout(ex)) {
+				throw ex;
+			}
+		}
+	}
+
+	public void closeFinally() throws IOException {
+		close();
+		this.fileService.openWriteChannel(this.file, true).closeFinally();
+	}
+
+	private void openChannel() throws IOException {
+		System.out.println("Opening cloud file");
+		this.channel = this.fileService.openWriteChannel(this.file, false);
+	}
+
+	private boolean fileHasBeenClosedByTimeout(IOException exception) {
+		Throwable cause = exception.getCause();
+		return cause != null && cause instanceof ApplicationException
+			&& ((ApplicationException) cause).getApplicationError() == FILE_CLOSED;
+	}
+}
