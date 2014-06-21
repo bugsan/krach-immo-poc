@@ -49,7 +49,10 @@ public class HtmlCleanerDocumentLoader extends CleanerProperties implements Docu
 	 */
 	private TagNode loadHtml(InputSource inputSource) throws IOException {
 		if (inputSource.getByteStream() != null) {
-			return this.htmlCleaner.clean(inputSource.getByteStream(), inputSource.getEncoding());
+			if (inputSource.getEncoding() != null) {
+				return this.htmlCleaner.clean(inputSource.getByteStream(), inputSource.getEncoding());
+			}
+			return this.htmlCleaner.clean(inputSource.getByteStream());
 		}
 		else if (inputSource.getCharacterStream() != null) {
 			return this.htmlCleaner.clean(inputSource.getCharacterStream());

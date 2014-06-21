@@ -26,6 +26,7 @@ http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.
 	</servlet-mapping>
 
 	<!-- Interdit tout appel externe -->
+	<!--
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>backend-tasks</web-resource-name>
@@ -35,5 +36,6 @@ http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.
 			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
+	-->
 
 </web-app>

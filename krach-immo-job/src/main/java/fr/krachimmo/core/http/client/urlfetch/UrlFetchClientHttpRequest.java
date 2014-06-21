@@ -61,7 +61,7 @@ public class UrlFetchClientHttpRequest implements AsyncClientHttpRequest {
 	@Override
 	public Future<ClientHttpResponse> executeAsync() {
 		checkExecuted();
-		HTTPRequest request = prepareHTTPRequest();
+		final HTTPRequest request = prepareHTTPRequest();
 		Future<HTTPResponse> future = this.urlFetchService.fetchAsync(request);
 		this.executed = true;
 		return new FutureWrapper<HTTPResponse, ClientHttpResponse>(future) {
@@ -72,6 +72,13 @@ public class UrlFetchClientHttpRequest implements AsyncClientHttpRequest {
 			@Override
 			protected Throwable convertException(Throwable cause) {
 				return cause;
+			}
+			@Override
+			protected ClientHttpResponse absorbParentException(Throwable cause) throws Throwable {
+				if (cause.getMessage().startsWith("Could not fetch URL:")) {
+					return new UrlFetchClientHttpResponse(urlFetchService.fetch(request));
+				}
+				return super.absorbParentException(cause);
 			}
 		};
 	}

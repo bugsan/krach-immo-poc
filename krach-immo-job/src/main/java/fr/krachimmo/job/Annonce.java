@@ -7,37 +7,40 @@ package fr.krachimmo.job;
  */
 public class Annonce {
 
-	private Long id;
+	private long id;
 	private double superficie;
-	private double prix;
+	private int prix;
 	private int pieces;
-	
-	public Long getId() {
-		return id;
+
+	public long getId() {
+		return this.id;
 	}
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public double getSuperficie() {
-		return superficie;
+		return this.superficie;
 	}
 	public void setSuperficie(double superficie) {
 		this.superficie = superficie;
 	}
-	public double getPrix() {
-		return prix;
+	public int getPrix() {
+		return this.prix;
 	}
-	public void setPrix(double prix) {
+	public void setPrix(int prix) {
 		this.prix = prix;
 	}
 	public int getPieces() {
-		return pieces;
+		return this.pieces;
 	}
 	public void setPieces(int pieces) {
 		this.pieces = pieces;
 	}
 	@Override
 	public String toString() {
-		return "Annonce [superficie=" + superficie + ", prix=" + prix + ", pieces=" + pieces + "]";
+		return "Annonce [id=" + this.id
+				+ ", superficie=" + this.superficie
+				+ ", prix=" + this.prix
+				+ ", pieces=" + this.pieces + "]";
 	}
 }

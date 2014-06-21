@@ -7,7 +7,7 @@
 		<max-concurrent-requests>1</max-concurrent-requests>
 		<options>
 			<dynamic>true</dynamic>
-			<public>false</public>
+			<public>true</public>
 		</options>
 	</backend>
 </backends>

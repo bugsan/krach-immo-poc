@@ -32,7 +32,7 @@ public class ScrapUtils {
 		}
 	}
 
-	public static <T> T extractResponse(ClientHttpResponse response, ClientHttpResponseExtractor<T> extractor) {
+	public static <T> T extractResponse(ClientHttpResponse response, ClientHttpResponseExtractor<T> extractor) throws Exception {
 		try {
 			if (response.getRawStatusCode() >= 500) {
 				throw new IllegalStateException("Invalid http status code " + response.getRawStatusCode());
@@ -41,12 +41,6 @@ public class ScrapUtils {
 				return null;
 			}
 			return extractor.extract(response);
-		}
-		catch (RuntimeException ex) {
-			throw ex;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Cannot extract http response", ex);
 		}
 		finally {
 			if (log.isDebugEnabled()) {

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+ @author Sébastien Chatel
+ @since 29 October 2013
+-->
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Marché immobilier parisien</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+function drawChart() {
+	var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+	var data = new google.visualization.DataTable();
+	data.addColumn('number', 'superficie');
+	data.addColumn('number', 'studio');
+	data.addColumn('number', '2 pieces');
+	data.addColumn('number', '3 pieces');
+	data.addColumn('number', '4 pieces');
+	data.addColumn('number', 'autres');
+	var options = {
+		title: 'Prix au m²',
+		hAxis: {title: 'Superficie', viewWindow: {min: 0, max: 300}},
+		vAxis: {title: 'Prix', viewWindow: {min: 0, max: 20000}},
+		pointSize: 2,
+		legend: 'none'
+	};
+	function fetchData(url) {
+		$.ajax({
+			url: url,
+			dataType: 'text',
+			crossDomain: true
+		}).done(function(csv) {
+			populateChartWithCSVData(data, csv);
+			chart.draw(data, options);
+		}).fail(function(xhr, status, errorThrown) {
+			if (xhr.status == 302) {
+				fetchData(xhr.getResponseHeader('Location'));
+			}
+			else {
+				console.log(xhr.status);
+			}
+		});
+	}
+	fetchData('http://storage.googleapis.com/krach-immo/paris-20140621203057.csv');
+	//fetchData('/paris-latest');
+}
+function populateChartWithCSVData(data, csv) {
+	var lines = csv.split("\n");
+	for (i = 0; i < lines.length; i++) {
+		var cols = lines[i].split(",");
+		var pieces = cols[3];
+		var prixm2 = Math.round(cols[1] / cols[2] / 50) * 50;
+		var superficie = Math.round(cols[2]);
+		data.addRow([
+			superficie,
+			pieces==1||pieces==0&&superficie<=50?prixm2:null,
+			pieces==2?prixm2:null,
+			pieces==3?prixm2:null,
+			pieces==4?prixm2:null,
+			pieces>=5||pieces==0&&superficie>50?prixm2:null
+		]);
+	}
+}
+</script>
+</head>
+<body>
+	<div id="chart_div" style="width: 900px; height: 500px;"></div>
+</body>
+</html>
