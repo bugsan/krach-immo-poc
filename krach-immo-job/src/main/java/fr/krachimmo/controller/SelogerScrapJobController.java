@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,9 +43,10 @@ public class SelogerScrapJobController {
 	@RequestMapping("/run-scrap-job")
 	@ResponseStatus(HttpStatus.OK)
 	public void run() throws Exception {
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+		df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
 		CloudStorageFile file = new CloudStorageFile("krach-immo",
-				"paris-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".csv",
-				"utf-8", true);
+				"paris-" + df.format(new Date()) + ".csv", "utf-8", true);
 		SearchCriteria criteria = new SearchCriteria()
 				.commune("750101,750102,750103,750104,750105,750106," +
 						"750107,750108,750109,750110,750111,750112," +
