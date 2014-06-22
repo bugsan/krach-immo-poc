@@ -60,7 +60,6 @@ public class AppengineFileOutputStream extends OutputStream {
 	}
 
 	private void doWrite(ByteBuffer buffer) throws IOException {
-		System.out.println("Writing " + buffer.remaining() + " bytes to cloud file");
 		this.channel.write(buffer);
 	}
 
@@ -84,7 +83,6 @@ public class AppengineFileOutputStream extends OutputStream {
 	}
 
 	private void openChannel() throws IOException {
-		System.out.println("Opening cloud file");
 		this.channel = this.fileService.openWriteChannel(this.file, false);
 	}
 

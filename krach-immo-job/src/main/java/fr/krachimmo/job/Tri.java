@@ -7,7 +7,7 @@ package fr.krachimmo.job;
  */
 public enum Tri {
 
-	Creation("d_dt_crea");
+	Creation("d_dt_crea"),Modification("d_dt_maj");
 
 	private final String code;
 

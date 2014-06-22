@@ -20,6 +20,7 @@ import fr.krachimmo.job.CloudStorageFile;
 import fr.krachimmo.job.Config;
 import fr.krachimmo.job.SearchCriteria;
 import fr.krachimmo.job.SelogerScrapJob;
+import fr.krachimmo.job.Tri;
 import fr.krachimmo.job.TypeBien;
 
 /**
@@ -42,12 +43,14 @@ public class SelogerScrapJobController {
 	@ResponseStatus(HttpStatus.OK)
 	public void run() throws Exception {
 		CloudStorageFile file = new CloudStorageFile("krach-immo",
-				"paris-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".csv");
+				"paris-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".csv",
+				"utf-8", true);
 		SearchCriteria criteria = new SearchCriteria()
 				.commune("750101,750102,750103,750104,750105,750106," +
 						"750107,750108,750109,750110,750111,750112," +
 						"750113,750114,750115,750116,750117") // paris
-				.typeBien(TypeBien.Appartement);
+				.typeBien(TypeBien.Appartement)
+				.tri(Tri.Modification);
 		this.selogerScrapJob.run(new Config(criteria, file));
 		this.dataStore.saveLatestDataLocation(file.getLocation());
 	}

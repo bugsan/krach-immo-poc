@@ -102,7 +102,6 @@ public class AppengineFileInputStream extends InputStream {
 	}
 
 	private void openChannel() throws IOException {
-		System.out.println("Opening cloud file");
 		this.inputStream = Channels.newInputStream(this.fileService.openReadChannel(this.file, false));
 	}
 

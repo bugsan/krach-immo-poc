@@ -44,7 +44,7 @@ function populateChartWithCSVData(data, csv) {
 	for (i = 0; i < lines.length; i++) {
 		var cols = lines[i].split(",");
 		var pieces = cols[3];
-		var prixm2 = Math.round(cols[1] / cols[2] / 50) * 50;
+		var prixm2 = Math.round(cols[1] / cols[2] / 10) * 10;
 		var superficie = Math.round(cols[2]);
 		data.addRow([
 			superficie,
