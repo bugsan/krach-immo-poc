@@ -2,23 +2,18 @@ package fr.krachimmo.controller;
 
 import java.io.IOException;
 import java.net.URI;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import com.google.appengine.api.files.FileService;
 
 import fr.krachimmo.data.DataStore;
 import fr.krachimmo.job.CloudStorageFile;
@@ -33,7 +28,6 @@ import fr.krachimmo.job.TypeBien;
  * @since 20 June 2014
  */
 @Controller
-@SuppressWarnings("deprecation")
 public class SelogerScrapJobController {
 
 	private static final Log log = LogFactory.getLog(SelogerScrapJobController.class);
@@ -44,35 +38,29 @@ public class SelogerScrapJobController {
 	@Autowired
 	DataStore dataStore;
 
-	@Autowired
-	FileService fileService;
-
 	@RequestMapping("/run-scrap-job")
-	public ResponseEntity<?> run() throws Exception {
-		DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-		df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
-		String filename = "paris-" + df.format(new Date()) + ".csv";
-		CloudStorageFile file = new CloudStorageFile("krach-immo", filename);
-		this.selogerScrapJob.run(new Config(
-				new SearchCriteria()
-				.commune("750056") // paris
-				.typeBien(TypeBien.Appartement),
-				file));
+	@ResponseStatus(HttpStatus.OK)
+	public void run() throws Exception {
+		CloudStorageFile file = new CloudStorageFile("krach-immo",
+				"paris-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".csv");
+		SearchCriteria criteria = new SearchCriteria()
+				.commune("750101,750102,750103,750104,750105,750106," +
+						"750107,750108,750109,750110,750111,750112," +
+						"750113,750114,750115,750116,750117") // paris
+				.typeBien(TypeBien.Appartement);
+		this.selogerScrapJob.run(new Config(criteria, file));
 		this.dataStore.saveLatestDataLocation(file.getLocation());
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(URI.create(file.getLocation()));
-		return new ResponseEntity<String>(headers, HttpStatus.FOUND);
 	}
 
-	@RequestMapping("/paris-latest")
-	public ResponseEntity<Resource> latestData() throws IOException {
-		Resource resource = this.dataStore.findLatestData();
-		if (resource == null) {
-			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+	@RequestMapping("/latest")
+	public ResponseEntity<?> latestData() throws IOException {
+		String location = this.dataStore.findLatestDataLocation();
+		if (location == null) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		}
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "text/plain; charset=utf-8");
-		return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+		headers.setLocation(URI.create(location));
+		return new ResponseEntity<Object>(headers, HttpStatus.FOUND);
 	}
 
 	@RequestMapping("/_ah/start")

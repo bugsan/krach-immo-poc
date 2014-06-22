@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+	<cron>
+		<url>/run-scrap-job</url>
+		<description>Refresh data every day</description>
+		<schedule>every day 05:30</schedule>
+		<timezone>Europe/Paris</timezone>
+		<target>job</target>
+	</cron>
+</cronentries>

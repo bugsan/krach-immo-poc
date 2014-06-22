@@ -7,8 +7,8 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Marché immobilier parisien</title>
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(drawChart);
@@ -29,25 +29,15 @@ function drawChart() {
 		pointSize: 2,
 		legend: 'none'
 	};
-	function fetchData(url) {
-		$.ajax({
-			url: url,
-			dataType: 'text',
-			crossDomain: true
-		}).done(function(csv) {
-			populateChartWithCSVData(data, csv);
-			chart.draw(data, options);
-		}).fail(function(xhr, status, errorThrown) {
-			if (xhr.status == 302) {
-				fetchData(xhr.getResponseHeader('Location'));
-			}
-			else {
-				console.log(xhr.status);
-			}
-		});
-	}
-	fetchData('http://storage.googleapis.com/krach-immo/paris-20140621203057.csv');
-	//fetchData('/paris-latest');
+
+	$.ajax({
+		url: '/latest',
+		dataType: 'text',
+		crossDomain: true
+	}).done(function(csv) {
+		populateChartWithCSVData(data, csv);
+		chart.draw(data, options);
+	});
 }
 function populateChartWithCSVData(data, csv) {
 	var lines = csv.split("\n");

@@ -37,7 +37,7 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 
 	private static final Log log = LogFactory.getLog(SelogerScrapJobImpl.class);
 
-	private static final int MAX_CONCURRENT_REQUESTS = 15;
+	private static final int MAX_CONCURRENT_REQUESTS = 20;
 
 	private static final int LAST_PAGE = 200;
 

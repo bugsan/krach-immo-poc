@@ -34,6 +34,6 @@ public class CloudStorageFile {
 		return this.gzip;
 	}
 	public String getLocation() {
-		return "https://storage.googleapis.com/" + this.bucket + "/" + this.filename;
+		return "http://storage.googleapis.com/" + this.bucket + "/" + this.filename;
 	}
 }
