@@ -35,7 +35,7 @@ public class AnnonceSearchResultsDocumentMapper implements DocumentMapper<Annonc
 	private static final XPathExpression prixExpr = xpath(
 			"div[1]/a[@class='amount']");
 	private static final XPathExpression superficieExpr = xpath(
-			"ul[@class='property_list']/li[contains(text(),' m&sup2;')]");
+			"ul[@class='property_list']/li[contains(text(),' m²')]");
 
 	@Override
 	public AnnonceSearchResults mapDocument(Node document) throws Exception {
@@ -82,7 +82,7 @@ public class AnnonceSearchResultsDocumentMapper implements DocumentMapper<Annonc
 			return null;
 		}
 		String valueToUse = value.trim();
-		int m2pos = valueToUse.indexOf(" m");
+		int m2pos = valueToUse.indexOf(" m²");
 		if (m2pos == -1) {
 			return null;
 		}
@@ -91,15 +91,15 @@ public class AnnonceSearchResultsDocumentMapper implements DocumentMapper<Annonc
 
 	private Number parsePrix(String value) throws ParseException {
 		String valueToUse = value.replaceAll("[\\s\\xa0]|(&nbsp;)", "");
-		return numberFormat.parse(valueToUse.substring(0, valueToUse.indexOf("&euro")));
+		return numberFormat.parse(valueToUse.substring(0, valueToUse.indexOf("€")));
 	}
 
 	private Number parsePieces(String value) {
 		if (value.contains("Studio")) {
 			return 1;
 		}
-		else if (value.contains("pi&egrave;ce")) {
-			String part = value.substring(0, value.indexOf("pi&egrave;ce") - 1);
+		else if (value.contains("pièce")) {
+			String part = value.substring(0, value.indexOf("pièce") - 1);
 			return Integer.parseInt(part.substring(part.lastIndexOf(" ") + 1));
 		}
 		else {

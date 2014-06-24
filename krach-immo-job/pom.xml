@@ -7,6 +7,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
+	<properties>
+		<spring.version>4.0.5.RELEASE</spring.version>
+		<appengine.version>1.9.5</appengine.version>
+		<!-- Les version supérieures ne semblent pas thread-safe -->
+		<htmlcleaner.version>2.2.1</htmlcleaner.version>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -18,11 +25,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<properties>
-		<spring.version>4.0.5.RELEASE</spring.version>
-		<appengine.version>1.9.5</appengine.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -38,7 +40,7 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlcleaner</groupId>
 			<artifactId>htmlcleaner</artifactId>
-			<version>2.6.1</version>
+			<version>${htmlcleaner.version}</version>
 		</dependency>
 
 		<!-- Logs -->

@@ -5,6 +5,7 @@ import static fr.krachimmo.core.scrap.ScrapUtils.extractResponse;
 
 import java.util.concurrent.Future;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.ClientHttpResponse;
 
 import com.google.appengine.api.utils.FutureWrapper;
@@ -53,7 +54,12 @@ public class ScrapTemplate implements ScrapOperations {
 
 	@Override
 	public <T> Future<T> scrapForObject(String uri, DocumentMapper<T> documentMapper) {
-		return scrapForObject(new SimpleHttpRequestPreparator(uri), new DocumentMapperHttpResponseExtractor<>(this.documentLoader, documentMapper));
+		return scrapForObject(uri, new HttpHeaders(), documentMapper);
+	}
+
+	@Override
+	public <T> Future<T> scrapForObject(String uri, HttpHeaders headers, DocumentMapper<T> documentMapper) {
+		return scrapForObject(new SimpleHttpRequestPreparator(uri, headers), new DocumentMapperHttpResponseExtractor<>(this.documentLoader, documentMapper));
 	}
 
 	private static class FutureHttpResponseExtractor<T> extends FutureWrapper<ClientHttpResponse, T> {

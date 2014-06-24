@@ -3,6 +3,7 @@ package fr.krachimmo.core.scrap;
 import java.io.IOException;
 import java.net.URI;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 import fr.krachimmo.core.http.client.AsyncClientHttpRequest;
@@ -17,15 +18,22 @@ public class SimpleHttpRequestPreparator implements ClientHttpRequestPreparator 
 
 	private final String uri;
 
+	private final HttpHeaders headers;
+
 	private final HttpMethod method;
 
-	public SimpleHttpRequestPreparator(String uri) {
-		this(uri, HttpMethod.GET);
+	public SimpleHttpRequestPreparator(String uri, HttpHeaders headers) {
+		this(uri, headers, HttpMethod.GET);
 	}
 
-	public SimpleHttpRequestPreparator(String uri, HttpMethod method) {
+	public SimpleHttpRequestPreparator(String uri) {
+		this(uri, new HttpHeaders(), HttpMethod.GET);
+	}
+
+	public SimpleHttpRequestPreparator(String uri, HttpHeaders headers, HttpMethod method) {
 		this.uri = uri;
 		this.method = method;
+		this.headers = headers;
 	}
 
 	@Override
@@ -36,6 +44,6 @@ public class SimpleHttpRequestPreparator implements ClientHttpRequestPreparator 
 	}
 
 	protected void populateHeaders(AsyncClientHttpRequest request) {
-		request.getHeaders().set("Accept-Encoding", "gzip");
+		request.getHeaders().putAll(this.headers);
 	}
 }

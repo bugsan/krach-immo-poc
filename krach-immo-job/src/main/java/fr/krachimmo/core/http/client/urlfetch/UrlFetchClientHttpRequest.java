@@ -62,6 +62,7 @@ public class UrlFetchClientHttpRequest implements AsyncClientHttpRequest {
 	public Future<ClientHttpResponse> executeAsync() {
 		checkExecuted();
 		final HTTPRequest request = prepareHTTPRequest();
+//		printHeaders(request.getHeaders());
 		Future<HTTPResponse> future = this.urlFetchService.fetchAsync(request);
 		this.executed = true;
 		return new FutureWrapper<HTTPResponse, ClientHttpResponse>(future) {
@@ -72,13 +73,6 @@ public class UrlFetchClientHttpRequest implements AsyncClientHttpRequest {
 			@Override
 			protected Throwable convertException(Throwable cause) {
 				return cause;
-			}
-			@Override
-			protected ClientHttpResponse absorbParentException(Throwable cause) throws Throwable {
-				if (cause.getMessage().startsWith("Could not fetch URL:")) {
-					return new UrlFetchClientHttpResponse(urlFetchService.fetch(request));
-				}
-				return super.absorbParentException(cause);
 			}
 		};
 	}
@@ -128,5 +122,11 @@ public class UrlFetchClientHttpRequest implements AsyncClientHttpRequest {
 
 	private void checkExecuted() {
 		Assert.state(!this.executed, "ClientHttpRequest already executed");
+	}
+
+	protected void printHeaders(List<HTTPHeader> headers) {
+		for (HTTPHeader header : headers) {
+			System.out.println(header.getName() + ": " + header.getValue());
+		}
 	}
 }

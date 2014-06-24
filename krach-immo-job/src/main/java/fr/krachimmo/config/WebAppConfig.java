@@ -35,7 +35,7 @@ public class WebAppConfig {
 	public AsyncClientHttpRequestFactory clientHttpRequestFactory(URLFetchService urlFetchService) {
 		UrlFetchClientHttpRequestFactory factory = new UrlFetchClientHttpRequestFactory();
 		factory.setUrlFetchService(urlFetchService);
-		factory.setDeadline(60);
+		factory.setDeadline(20);
 		return factory;
 	}
 	@Bean

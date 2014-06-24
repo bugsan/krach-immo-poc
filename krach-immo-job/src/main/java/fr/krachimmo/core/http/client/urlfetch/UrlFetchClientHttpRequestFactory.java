@@ -1,6 +1,5 @@
 package fr.krachimmo.core.http.client.urlfetch;
 
-import java.io.IOException;
 import java.net.URI;
 
 import org.springframework.http.HttpMethod;
@@ -51,7 +50,7 @@ public class UrlFetchClientHttpRequestFactory implements AsyncClientHttpRequestF
 	}
 
 	@Override
-	public AsyncClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+	public AsyncClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) {
 		return new UrlFetchClientHttpRequest(uri, httpMethod, this);
 	}
 }

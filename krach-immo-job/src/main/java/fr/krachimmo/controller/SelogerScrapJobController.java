@@ -21,7 +21,6 @@ import fr.krachimmo.job.CloudStorageFile;
 import fr.krachimmo.job.Config;
 import fr.krachimmo.job.SearchCriteria;
 import fr.krachimmo.job.SelogerScrapJob;
-import fr.krachimmo.job.Tri;
 import fr.krachimmo.job.TypeBien;
 
 /**
@@ -41,7 +40,7 @@ public class SelogerScrapJobController {
 	DataStore dataStore;
 
 	@RequestMapping("/run-scrap-job")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	public void run() throws Exception {
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 		df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
@@ -51,8 +50,7 @@ public class SelogerScrapJobController {
 				.commune("750101,750102,750103,750104,750105,750106," +
 						"750107,750108,750109,750110,750111,750112," +
 						"750113,750114,750115,750116,750117") // paris
-				.typeBien(TypeBien.Appartement)
-				.tri(Tri.Modification);
+				.typeBien(TypeBien.Appartement);
 		this.selogerScrapJob.run(new Config(criteria, file));
 		this.dataStore.saveLatestDataLocation(file.getLocation());
 	}

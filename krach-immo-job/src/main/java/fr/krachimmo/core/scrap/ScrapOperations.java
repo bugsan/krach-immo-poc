@@ -2,6 +2,8 @@ package fr.krachimmo.core.scrap;
 
 import java.util.concurrent.Future;
 
+import org.springframework.http.HttpHeaders;
+
 
 /**
  *
@@ -11,5 +13,6 @@ import java.util.concurrent.Future;
 public interface ScrapOperations {
 
 	<T> Future<T> scrapForObject(ClientHttpRequestPreparator preparator, ClientHttpResponseExtractor<T> extractor);
+	<T> Future<T> scrapForObject(String uri, HttpHeaders headers, DocumentMapper<T> documentMapper);
 	<T> Future<T> scrapForObject(String uri, DocumentMapper<T> documentMapper);
 }
