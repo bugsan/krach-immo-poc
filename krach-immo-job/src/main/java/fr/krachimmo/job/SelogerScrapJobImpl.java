@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -71,9 +72,9 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		log.info("Starting seloger scrap job");
 		log.info("Opening file for writing " + config.getFile().getLocation());
 		PrintWriter out = openWriter(config.getFile());
+		Set<Long> annoncesUniques = new HashSet<Long>();
 		Set<ScrapTask<AnnonceSearchResults>> tasks = new CopyOnWriteArraySet<ScrapTask<AnnonceSearchResults>>();
 		int page = 1;
-		int annonceCount = 0;
 		while (page <= LAST_PAGE && tasks.size() < this.maxConcurrentRequests) {
 			tasks.add(submitTask(buildSearchUri(config.getCriteria(), page++)));
 		}
@@ -85,10 +86,12 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 					if (page <= LAST_PAGE) {
 						tasks.add(submitTask(buildSearchUri(config.getCriteria(), page++)));
 					}
-					out.println("#" + task.getUri());
+//					out.println("#" + task.getUri());
 					for (Annonce annonce : results.getAnnonces()) {
-						out.println(buildCsvLine(annonce));
-						annonceCount++;
+						if (!annoncesUniques.contains(annonce.getId())) {
+							out.println(buildCsvLine(annonce));
+							annoncesUniques.add(annonce.getId());
+						}
 					}
 				}
 				catch (TimeoutException ex) {
@@ -107,7 +110,7 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 			}
 		}
 		out.close();
-		log.info("Successfully scraped " + annonceCount + " annonces");
+		log.info("Successfully scraped " + annoncesUniques.size() + " annonces");
 	}
 
 	private ScrapTask<AnnonceSearchResults> submitTask(final String uri) {
