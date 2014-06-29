@@ -1,5 +1,9 @@
 package fr.krachimmo.config;
 
+import java.util.Properties;
+
+import javax.mail.Session;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -53,5 +57,9 @@ public class WebAppConfig {
 	@Bean
 	public DatastoreService datastoreService() {
 		return DatastoreServiceFactory.getDatastoreService();
+	}
+	@Bean
+	public Session mailSession() {
+		return Session.getDefaultInstance(new Properties());
 	}
 }

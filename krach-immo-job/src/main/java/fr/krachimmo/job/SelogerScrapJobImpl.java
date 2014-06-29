@@ -14,6 +14,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.zip.GZIPOutputStream;
 
+import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +58,8 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 	FileService fileService;
 	@Autowired
 	SelogerSearchService selogerSearchService;
+	@Autowired
+	Session session;
 
 	private int lastPage = DEFAULT_LAST_PAGE;
 
@@ -73,9 +84,10 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 	@Override
 	public void run(Config config) throws Exception {
 		log.info("Starting seloger scrap job");
-		PrintWriter out = openFileForWriting(config.getFileOptions());
+		PrintWriter annoncesFile = openFileForWriting(config.getFileOptions());
 		Set<Long> annoncesUniques = new HashSet<Long>();
 		Set<SearchTask<AnnonceSearchResults>> tasks = new CopyOnWriteArraySet<SearchTask<AnnonceSearchResults>>();
+		AnnoncesStats annoncesStats = new AnnoncesStats();
 		int page = 1;
 
 		while (page <= this.lastPage && tasks.size() < this.maxConcurrentRequests) {
@@ -91,7 +103,8 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 					}
 					for (Annonce annonce : results.getAnnonces()) {
 						if (!annoncesUniques.contains(annonce.getId())) {
-							out.println(this.lineAggregator.aggregate(annonce));
+							annoncesFile.println(this.lineAggregator.aggregate(annonce));
+							annoncesStats.add(annonce);
 							annoncesUniques.add(annonce.getId());
 						}
 					}
@@ -111,7 +124,13 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 				}
 			}
 		}
-		out.close();
+		annoncesFile.close();
+		sendEmail(
+			"Krach-Immo Report <report@krach-immo.appspotmail.com>",
+			config.getReportConfig().getMailTo(),
+			"Mètre carré parisien " + annoncesStats.getPricePerSquareMeter() + " €",
+			"<p>Mètre carré parisien <b>" + annoncesStats.getPricePerSquareMeter() + "</b> €</p>" +
+			"<p>Données disponibles <a href='" + config.getFileOptions().getLocation() + "'><b>ici</b</a></p>");
 		log.info("Successfully scraped " + annoncesUniques.size() + " annonces");
 	}
 
@@ -123,7 +142,7 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 	}
 
 	private PrintWriter openFileForWriting(FileOptions fileOptions) throws IOException {
-		log.info("Open file for writing " + fileOptions.getLocation());
+		log.info("Opening file for writing " + fileOptions.getLocation());
 		GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
 			.setBucket(fileOptions.getBucket())
 			.setKey(fileOptions.getFilename())
@@ -139,6 +158,21 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		Writer writer = new OutputStreamWriter(os, fileOptions.getCharset());
 		writer = new BufferedWriter(writer);
 		return new PrintWriter(writer);
+	}
+
+	private void sendEmail(String from, String to, String subject, String html) throws MessagingException {
+		log.info("Sending report to " + to);
+		MimeMessage message = new MimeMessage(this.session);
+		message.setFrom(new InternetAddress(from));
+		message.setRecipient(RecipientType.TO, new InternetAddress(to));
+		message.setSubject(subject, "utf-8");
+		MimeBodyPart textPart = new MimeBodyPart();
+		textPart.setText(html, "utf-8");
+		textPart.setHeader("Content-Type", "text/html; charset=\"utf-8\"");
+		MimeMultipart multipart = new MimeMultipart("mixed");
+		multipart.addBodyPart(textPart);
+		message.setContent(multipart);
+		Transport.send(message);
 	}
 
 	/**

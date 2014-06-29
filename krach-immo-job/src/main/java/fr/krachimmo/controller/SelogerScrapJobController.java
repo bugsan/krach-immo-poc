@@ -22,6 +22,7 @@ import fr.krachimmo.job.AnnonceCsvLineAggregator;
 import fr.krachimmo.job.Config;
 import fr.krachimmo.job.FileOptions;
 import fr.krachimmo.job.LineAggregator;
+import fr.krachimmo.job.ReportConfig;
 import fr.krachimmo.job.SearchCriteria;
 import fr.krachimmo.job.SelogerScrapJob;
 import fr.krachimmo.job.Tri;
@@ -66,7 +67,9 @@ public class SelogerScrapJobController {
 				.typeBien(TypeBien.Appartement)
 				.tri(Tri.Modification)
 				.fraicheur(5);
-		this.selogerScrapJob.run(new Config(criteria, fileOptions));
+		ReportConfig reportConfig = new ReportConfig()
+				.mailTo("bugsan@gmail.com");
+		this.selogerScrapJob.run(new Config(criteria, fileOptions, reportConfig));
 		this.dataStore.saveLatestDataLocation(fileOptions.getLocation());
 	}
 
