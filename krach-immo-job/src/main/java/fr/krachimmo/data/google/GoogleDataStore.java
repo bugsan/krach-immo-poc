@@ -1,7 +1,6 @@
 package fr.krachimmo.data.google;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -45,13 +44,13 @@ public class GoogleDataStore implements DataStore {
 		this.datastoreService.put(latest);
 	}
 
-	@Override
-	public Resource findLatestData() {
-		String path = findLatestDataLocation();
-		if (path == null) {
-			return null;
-		}
-		String filepath = "/gs/" + path.substring(path.indexOf(".com/") + 5);
-		return new CloudStorageResource(filepath, this.fileService);
-	}
+//	@Override
+//	public Resource findLatestData() {
+//		String path = findLatestDataLocation();
+//		if (path == null) {
+//			return null;
+//		}
+//		String filepath = "/gs/" + path.substring(path.indexOf(".com/") + 5);
+//		return new CloudStorageResource(filepath, this.fileService);
+//	}
 }

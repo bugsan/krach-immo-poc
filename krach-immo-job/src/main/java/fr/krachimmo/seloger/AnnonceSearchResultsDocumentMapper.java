@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo.seloger;
 
 import static fr.krachimmo.core.scrap.DocumentMapperUtils.xpath;
 

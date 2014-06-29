@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo.seloger;
 
 /**
  * Représente une annonce SeLoger.

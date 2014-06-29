@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo;
 
 import org.xml.sax.InputSource;
 

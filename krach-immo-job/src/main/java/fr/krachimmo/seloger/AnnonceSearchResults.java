@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo.seloger;
 
 import java.util.ArrayList;
 import java.util.List;

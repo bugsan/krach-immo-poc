@@ -10,12 +10,12 @@ import java.util.concurrent.TimeoutException;
  * @author Sébastien Chatel
  * @since 21 June 2014
  */
-public class ScrapTask<T> {
+public class SearchTask<T> {
 
 	private final String uri;
 	private final Future<T> future;
 
-	public ScrapTask(String uri, Future<T> future) {
+	public SearchTask(String uri, Future<T> future) {
 		this.uri = uri;
 		this.future = future;
 	}
@@ -46,7 +46,7 @@ public class ScrapTask<T> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ScrapTask<T> other = (ScrapTask<T>) obj;
+		SearchTask<T> other = (SearchTask<T>) obj;
 		if (this.uri == null) {
 			if (other.uri != null)
 				return false;

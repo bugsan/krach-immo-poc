@@ -8,7 +8,7 @@ import org.springframework.core.io.AbstractResource;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 
-import fr.krachimmo.core.store.AppengineFileInputStream;
+import fr.krachimmo.core.file.store.AppengineFileInputStream;
 
 /**
  *

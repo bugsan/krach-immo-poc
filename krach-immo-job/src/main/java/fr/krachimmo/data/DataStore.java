@@ -1,6 +1,5 @@
 package fr.krachimmo.data;
 
-import org.springframework.core.io.Resource;
 
 /**
  *
@@ -12,6 +11,4 @@ public interface DataStore {
 	String findLatestDataLocation();
 
 	void saveLatestDataLocation(String location);
-
-	Resource findLatestData();
 }

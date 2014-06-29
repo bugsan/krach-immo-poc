@@ -5,30 +5,37 @@ package fr.krachimmo.job;
  * @author Sébastien Chatel
  * @since 21 June 2014
  */
-public class CloudStorageFile {
+public class FileOptions {
 
-	private final String bucket;
-	private final String filename;
-	private final String charset;
-	private final boolean gzip;
+	private String bucket;
+	private String filename;
+	private String charset;
+	private boolean gzip = false;
 
-	public CloudStorageFile(String bucket, String filename) {
-		this(bucket, filename, "utf-8", false);
-	}
-	public CloudStorageFile(String bucket, String filename, String charset, boolean gzip) {
+	public FileOptions bucket(String bucket) {
 		this.bucket = bucket;
-		this.filename = filename;
-		this.charset = charset;
-		this.gzip = gzip;
+		return this;
 	}
 	public String getBucket() {
 		return this.bucket;
 	}
+	public FileOptions filename(String filename) {
+		this.filename = filename;
+		return this;
+	}
 	public String getFilename() {
 		return this.filename;
 	}
+	public FileOptions charset(String charset) {
+		this.charset = charset;
+		return this;
+	}
 	public String getCharset() {
 		return this.charset;
+	}
+	public FileOptions gzip(boolean gzip) {
+		this.gzip = gzip;
+		return this;
 	}
 	public boolean isGzip() {
 		return this.gzip;

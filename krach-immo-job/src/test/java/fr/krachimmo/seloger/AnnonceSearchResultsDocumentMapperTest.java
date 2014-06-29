@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo.seloger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -7,9 +7,13 @@ import java.util.List;
 
 import org.junit.Test;
 
+import fr.krachimmo.ClassPathInputSource;
 import fr.krachimmo.core.html.DocumentLoader;
 import fr.krachimmo.core.html.cleaner.HtmlCleanerDocumentLoader;
 import fr.krachimmo.core.scrap.DocumentMapper;
+import fr.krachimmo.seloger.Annonce;
+import fr.krachimmo.seloger.AnnonceSearchResults;
+import fr.krachimmo.seloger.AnnonceSearchResultsDocumentMapper;
 
 /**
  *

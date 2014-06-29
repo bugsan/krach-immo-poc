@@ -1,4 +1,4 @@
-package fr.krachimmo.job;
+package fr.krachimmo;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

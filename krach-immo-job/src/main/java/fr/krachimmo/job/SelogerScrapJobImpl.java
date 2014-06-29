@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
@@ -18,17 +17,16 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
-import com.google.appengine.api.files.GSFileOptions;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
 
-import fr.krachimmo.core.scrap.DocumentMapper;
-import fr.krachimmo.core.scrap.ScrapOperations;
-import fr.krachimmo.core.store.AppengineFileOutputStream;
+import fr.krachimmo.core.file.store.AppengineFileOutputStream;
+import fr.krachimmo.seloger.Annonce;
+import fr.krachimmo.seloger.AnnonceSearchResults;
+import fr.krachimmo.seloger.SelogerSearchService;
 
 /**
  *
@@ -43,17 +41,18 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 
 	private static final int DEFAULT_MAX_CONCURRENT_REQUESTS = 10;
 
-	private static final int LAST_PAGE = 200;
+	private static final int DEFAULT_LAST_PAGE = 200;
 
 	private static final long DEFAULT_WAIT_TIMEOUT_MILLIS = 25L;
 
 	@Autowired
-	ScrapOperations scrap;
-
-	@Autowired
 	FileService fileService;
+	@Autowired
+	SelogerSearchService selogerSearchService;
 
-	DocumentMapper<AnnonceSearchResults> documentMapper = new AnnonceSearchResultsDocumentMapper();
+	private int lastPage = DEFAULT_LAST_PAGE;
+
+	LineAggregator<Annonce> lineAggregator = new AnnonceCsvLineAggregator();
 
 	private int maxConcurrentRequests = DEFAULT_MAX_CONCURRENT_REQUESTS;
 
@@ -67,29 +66,32 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		this.waitTimeoutMillis = waitTimeoutMillis;
 	}
 
+	public void setLastPage(int lastPage) {
+		this.lastPage = lastPage;
+	}
+
 	@Override
 	public void run(Config config) throws Exception {
 		log.info("Starting seloger scrap job");
-		log.info("Opening file for writing " + config.getFile().getLocation());
-		PrintWriter out = openWriter(config.getFile());
+		PrintWriter out = openFileForWriting(config.getFileOptions());
 		Set<Long> annoncesUniques = new HashSet<Long>();
-		Set<ScrapTask<AnnonceSearchResults>> tasks = new CopyOnWriteArraySet<ScrapTask<AnnonceSearchResults>>();
+		Set<SearchTask<AnnonceSearchResults>> tasks = new CopyOnWriteArraySet<SearchTask<AnnonceSearchResults>>();
 		int page = 1;
-		while (page <= LAST_PAGE && tasks.size() < this.maxConcurrentRequests) {
-			tasks.add(submitTask(buildSearchUri(config.getCriteria(), page++)));
+
+		while (page <= this.lastPage && tasks.size() < this.maxConcurrentRequests) {
+			tasks.add(submitSearch(config.getCriteria().buildUri(page++)));
 		}
-		while (page <= LAST_PAGE || tasks.size() > 0) {
-			for (ScrapTask<AnnonceSearchResults> task : tasks) {
+		while (page <= this.lastPage || tasks.size() > 0) {
+			for (SearchTask<AnnonceSearchResults> task : tasks) {
 				try {
 					AnnonceSearchResults results = task.getResult(this.waitTimeoutMillis);
 					tasks.remove(task);
-					if (page <= LAST_PAGE) {
-						tasks.add(submitTask(buildSearchUri(config.getCriteria(), page++)));
+					if (page <= this.lastPage) {
+						tasks.add(submitSearch(config.getCriteria().buildUri(page++)));
 					}
-//					out.println("#" + task.getUri());
 					for (Annonce annonce : results.getAnnonces()) {
 						if (!annoncesUniques.contains(annonce.getId())) {
-							out.println(buildCsvLine(annonce));
+							out.println(this.lineAggregator.aggregate(annonce));
 							annoncesUniques.add(annonce.getId());
 						}
 					}
@@ -98,10 +100,10 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 					// do nothing
 				}
 				catch (ExecutionException ex) {
-					if (canRetryRequest(ex.getCause())) {
-						log.warn("Http request failed, resubmitting task " + task.getUri());
+					if (canRetrySearchTask(ex.getCause())) {
+						log.warn("Search task failed, resubmitting " + task.getUri());
 						tasks.remove(task);
-						tasks.add(submitTask(task.getUri()));
+						tasks.add(submitSearch(task.getUri()));
 					}
 					else {
 						throw (Exception) ex.getCause();
@@ -113,76 +115,38 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		log.info("Successfully scraped " + annoncesUniques.size() + " annonces");
 	}
 
-	private ScrapTask<AnnonceSearchResults> submitTask(final String uri) {
+	private SearchTask<AnnonceSearchResults> submitSearch(String uri) {
 		if (log.isDebugEnabled()) {
-			log.debug("Submit scrap task " + uri);
+			log.debug("Submit search task " + uri);
 		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept-Encoding", "gzip");
-		headers.set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.set("Accept-Language", "fr-fr,fr;q=0.8,en-us;q=0.5,en;q=0.3");
-		headers.set("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:30.0) Gecko/20100101 Firefox/30.0");
-		return new ScrapTask<AnnonceSearchResults>(uri, this.scrap.scrapForObject(uri, headers, this.documentMapper));
+		return new SearchTask<AnnonceSearchResults>(uri, this.selogerSearchService.search(uri));
 	}
 
-	private PrintWriter openWriter(CloudStorageFile file) throws IOException {
-		AppEngineFile cloudFile = this.fileService.createNewGSFile(createFileOptions(file));
-		OutputStream os = new AppengineFileOutputStream(this.fileService, cloudFile, true);
+	private PrintWriter openFileForWriting(FileOptions fileOptions) throws IOException {
+		log.info("Open file for writing " + fileOptions.getLocation());
+		GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
+			.setBucket(fileOptions.getBucket())
+			.setKey(fileOptions.getFilename())
+			.setMimeType("text/plain; charset=" + fileOptions.getCharset())
+			.setAcl("public_read");
+		if (fileOptions.isGzip()) {
+			optionsBuilder.setContentEncoding("gzip");
+		}
+		AppEngineFile appengineFile = this.fileService.createNewGSFile(optionsBuilder.build());
+		OutputStream os = new AppengineFileOutputStream(this.fileService, appengineFile, true);
 		os = new BufferedOutputStream(os);
-		os = file.isGzip() ? new GZIPOutputStream(os) : os;
-		Writer writer = new OutputStreamWriter(os, file.getCharset());
+		os = fileOptions.isGzip() ? new GZIPOutputStream(os, true) : os;
+		Writer writer = new OutputStreamWriter(os, fileOptions.getCharset());
 		writer = new BufferedWriter(writer);
 		return new PrintWriter(writer);
 	}
 
-	private GSFileOptions createFileOptions(CloudStorageFile file) {
-		GSFileOptionsBuilder builder = new GSFileOptionsBuilder()
-			.setBucket(file.getBucket())
-			.setKey(file.getFilename())
-			.setMimeType("text/plain; charset=" + file.getCharset())
-			.setAcl("public_read");
-		if (file.isGzip()) {
-			builder.setContentEncoding("gzip");
-		}
-		return builder.build();
-	}
-
-	private String buildSearchUri(SearchCriteria criteria, int page) {
-		StringBuilder sb = new StringBuilder(256);
-		sb.append("http://www.seloger.com/list.htm");
-		sb.append("?idtt=2&ci=");
-		appendChoices(sb, criteria.getCommunes());
-		sb.append("&idtypebien=");
-		appendChoices(sb, criteria.getTypeBiens());
-		sb.append("&tri=").append(criteria.getTri());
-		sb.append("&LISTING-LISTpg=").append(page);
-		return sb.toString();
-	}
-
-	private void appendChoices(StringBuilder sb, List<?> choices) {
-		boolean first = true;
-		for (Object choice : choices) {
-			if (!first) {
-				sb.append(',');
-			}
-			sb.append(choice.toString());
-			first = false;
-		}
-	}
-
-	private String buildCsvLine(Annonce annonce) {
-		StringBuilder sb = new StringBuilder(128);
-		sb.append(annonce.getId());
-		sb.append(',');
-		sb.append(annonce.getPrix());
-		sb.append(',');
-		sb.append(annonce.getSuperficie());
-		sb.append(',');
-		sb.append(annonce.getPieces());
-		return sb.toString();
-	}
-
-	private boolean canRetryRequest(Throwable cause) {
+	/**
+	 * TODO leaky abstraction of urlfetch
+	 * @param cause
+	 * @return
+	 */
+	private boolean canRetrySearchTask(Throwable cause) {
 		return cause.getMessage().startsWith("Could not fetch URL:");
 	}
 }

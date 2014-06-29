@@ -1,5 +1,6 @@
 package fr.krachimmo.job;
 
+
 /**
  *
  * @author Sébastien Chatel
@@ -8,16 +9,16 @@ package fr.krachimmo.job;
 public class Config {
 
 	private SearchCriteria criteria;
-	private CloudStorageFile file;
+	private FileOptions fileOptions;
 
-	public Config(SearchCriteria criteria, CloudStorageFile file) {
+	public Config(SearchCriteria criteria, FileOptions fileOptions) {
 		this.criteria = criteria;
-		this.file = file;
+		this.fileOptions = fileOptions;
 	}
 	public SearchCriteria getCriteria() {
 		return this.criteria;
 	}
-	public CloudStorageFile getFile() {
-		return this.file;
+	public FileOptions getFileOptions() {
+		return this.fileOptions;
 	}
 }

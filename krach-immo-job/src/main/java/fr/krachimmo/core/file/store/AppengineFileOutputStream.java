@@ -1,16 +1,26 @@
-package fr.krachimmo.core.store;
+package fr.krachimmo.core.file.store;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.apphosting.api.ApiProxy.ApplicationException;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 20 June 2014
+ */
 @SuppressWarnings("deprecation")
 public class AppengineFileOutputStream extends OutputStream {
+
+	private static final Log log = LogFactory.getLog(AppengineFileOutputStream.class);
 
 	private static final int FILE_CLOSED = 10;
 
@@ -60,6 +70,7 @@ public class AppengineFileOutputStream extends OutputStream {
 	}
 
 	private void doWrite(ByteBuffer buffer) throws IOException {
+		log.info("Writing " + buffer.remaining() + " bytes to appengine file");
 		this.channel.write(buffer);
 	}
 

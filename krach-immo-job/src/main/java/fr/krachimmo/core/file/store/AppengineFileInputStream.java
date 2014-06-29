@@ -1,4 +1,4 @@
-package fr.krachimmo.core.store;
+package fr.krachimmo.core.file.store;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +8,11 @@ import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.apphosting.api.ApiProxy.ApplicationException;
 
+/**
+ *
+ * @author Sébastien Chatel
+ * @since 20 June 2014
+ */
 @SuppressWarnings("deprecation")
 public class AppengineFileInputStream extends InputStream {
 
