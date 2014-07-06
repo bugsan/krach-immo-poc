@@ -1,17 +1,13 @@
 package fr.krachimmo.controller;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,23 +18,15 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
 
 /**
  *
  * @author Sébastien Chatel
  * @since 20 January 2014
  */
-@Controller
+//@Controller
 public class HomeController {
 
-	private static final Log log = LogFactory.getLog(HomeController.class);
-
-	@Autowired
-	GcsService storageService;
 	@Autowired
 	DatastoreService datastoreService;
 	@Autowired
@@ -53,20 +41,6 @@ public class HomeController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "text/plain");
 		return new ResponseEntity<String>(entity.getKey().toString(), headers, HttpStatus.OK);
-	}
-
-	@RequestMapping("/")
-	public ResponseEntity<String> home2(@RequestParam String filename) throws IOException {
-		log.info("storing file");
-		GcsFileOptions options = new GcsFileOptions.Builder().mimeType("text/plain").build();
-		GcsOutputChannel channel = this.storageService.createOrReplace(
-				new GcsFilename("test-bucket", filename), options);
-		channel.write(ByteBuffer.wrap("Hello World!".getBytes()));
-		channel.close();
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "text/plain");
-		return new ResponseEntity<String>(channel.getFilename().toString(), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/api/annonces", method = RequestMethod.GET)

@@ -7,8 +7,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -28,6 +31,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
@@ -60,6 +66,8 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 	SelogerSearchService selogerSearchService;
 	@Autowired
 	Session session;
+	@Autowired
+	DatastoreService datastoreService;
 
 	private int lastPage = DEFAULT_LAST_PAGE;
 
@@ -87,8 +95,9 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		PrintWriter annoncesFile = openFileForWriting(config.getFileOptions());
 		Set<Long> annoncesUniques = new HashSet<Long>();
 		Set<SearchTask<AnnonceSearchResults>> tasks = new CopyOnWriteArraySet<SearchTask<AnnonceSearchResults>>();
-		AnnoncesStats annoncesStats = new AnnoncesStats();
+		AnnoncesStats stats = new AnnoncesStats();
 		int page = 1;
+		int doublons = 0;
 
 		while (page <= this.lastPage && tasks.size() < this.maxConcurrentRequests) {
 			tasks.add(submitSearch(config.getCriteria().buildUri(page++)));
@@ -104,8 +113,11 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 					for (Annonce annonce : results.getAnnonces()) {
 						if (!annoncesUniques.contains(annonce.getId())) {
 							annoncesFile.println(this.lineAggregator.aggregate(annonce));
-							annoncesStats.add(annonce);
+							stats.add(annonce);
 							annoncesUniques.add(annonce.getId());
+						}
+						else {
+							doublons++;
 						}
 					}
 				}
@@ -125,13 +137,13 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 			}
 		}
 		annoncesFile.close();
-		sendEmail(
-			"Krach-Immo Report <report@krach-immo.appspotmail.com>",
-			config.getReportConfig().getMailTo(),
-			"Mètre carré parisien " + annoncesStats.getPricePerSquareMeter() + " €",
-			"<p>Mètre carré parisien <b>" + annoncesStats.getPricePerSquareMeter() + "</b> €</p>" +
-			"<p>Données disponibles <a href='" + config.getFileOptions().getLocation() + "'><b>ici</b</a></p>");
+		saveLatestLocation(config.getFileOptions().getLocation());
+		saveQuote(stats);
+		sendEmailReport(config, stats);
 		log.info("Successfully scraped " + annoncesUniques.size() + " annonces");
+		if (doublons > 0) {
+			log.warn("Il y a eu " + doublons + " doublons, qui ont été ignorés");
+		}
 	}
 
 	private SearchTask<AnnonceSearchResults> submitSearch(String uri) {
@@ -158,6 +170,39 @@ public class SelogerScrapJobImpl implements SelogerScrapJob {
 		Writer writer = new OutputStreamWriter(os, fileOptions.getCharset());
 		writer = new BufferedWriter(writer);
 		return new PrintWriter(writer);
+	}
+
+	private void saveQuote(AnnoncesStats stats) {
+		log.info("Saving quote in datastore");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
+		Entity entity = new Entity(KeyFactory.createKey("Quote", df.format(new Date())));
+		entity.setUnindexedProperty("studio", stats.getPricePerSquareMeter1Piece());
+		entity.setUnindexedProperty("2pieces", stats.getPricePerSquareMeter2Pieces());
+		entity.setUnindexedProperty("3pieces", stats.getPricePerSquareMeter3Pieces());
+		entity.setUnindexedProperty("4+pieces", stats.getPricePerSquareMeter4PlusPieces());
+		entity.setUnindexedProperty("total", stats.getPricePerSquareMeter());
+		this.datastoreService.put(entity);
+	}
+
+	private void saveLatestLocation(String location) {
+		log.info("Saving latest data location");
+		Entity latest = new Entity("LatestData", 1L);
+		latest.setUnindexedProperty("location", location);
+		this.datastoreService.put(latest);
+	}
+
+	private void sendEmailReport(Config config, AnnoncesStats stats) throws MessagingException {
+		sendEmail(
+			"Krach-Immo Report <report@krach-immo.appspotmail.com>",
+			config.getReportConfig().getMailTo(),
+			"Mètre carré parisien " + stats.getPricePerSquareMeter() + " €",
+			"<p>Mètre carré parisien <b>" + stats.getPricePerSquareMeter() + "</b> €<br/>" +
+			"Studio <b>" + stats.getPricePerSquareMeter1Piece() + "</b> €<br/>" +
+			"2 pièces <b>" + stats.getPricePerSquareMeter2Pieces() + "</b> €<br/>" +
+			"3 pièces <b>" + stats.getPricePerSquareMeter3Pieces() + "</b> €<br/>" +
+			"4+ pièces <b>" + stats.getPricePerSquareMeter4PlusPieces() + "</b> €</p>" +
+			"<p>Données disponibles <a href='" + config.getFileOptions().getLocation() + "'><b>ici</b</a></p>");
 	}
 
 	private void sendEmail(String from, String to, String subject, String html) throws MessagingException {

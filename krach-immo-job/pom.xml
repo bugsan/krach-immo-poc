@@ -9,7 +9,7 @@
 
 	<properties>
 		<spring.version>4.0.5.RELEASE</spring.version>
-		<appengine.version>1.9.6</appengine.version>
+		<appengine.version>1.9.5</appengine.version>
 		<!-- Les version supérieures ne semblent pas thread-safe -->
 		<htmlcleaner.version>2.2.1</htmlcleaner.version>
 	</properties>

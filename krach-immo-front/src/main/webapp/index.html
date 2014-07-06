@@ -31,7 +31,7 @@ function drawChart() {
 	};
 
 	$.ajax({
-		url: '/latest',
+		url: '/api/annonces/latest',
 		dataType: 'text',
 		crossDomain: true
 	}).done(function(csv) {

@@ -9,8 +9,6 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 
 /**
  *
@@ -19,10 +17,6 @@ import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
  */
 @Configuration
 public class AppEngineConfig {
-	@Bean
-	GcsService storageService() {
-		return GcsServiceFactory.createGcsService();
-	}
 	@Bean
 	DatastoreService datastoreService() {
 		return DatastoreServiceFactory.getDatastoreService();

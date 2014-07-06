@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+ @author Sébastien Chatel
+ @since 29 October 2013
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Marché immobilier parisien</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+function drawChart() {
+	var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+	var data = new google.visualization.DataTable();
+	data.addColumn('date', 'date');
+	data.addColumn('number', 'Prix en €/m²');
+	var now = new Date();
+	var options = {
+		title: 'Evolution immo parisien',
+		vAxis: {title: 'Prix €/m²'}
+	};
+
+	$.ajax({
+		url: '/api/quotes?days=90',
+		dataType: 'json'
+	}).done(function(json) {
+		for (var i = 0; i < json.quotes.length; i++) {
+			var quote = json.quotes[i];
+			data.addRow([new Date(quote.date), quote.prices.total]);
+		}
+		chart.draw(data, options);
+	});
+}
+</script>
+</head>
+<body>
+	<div id="chart_div" style="width: 1000px; height: 500px;"></div>
+</body>
+</html>
