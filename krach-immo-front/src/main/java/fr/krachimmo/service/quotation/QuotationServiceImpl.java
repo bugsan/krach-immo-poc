@@ -61,7 +61,6 @@ public class QuotationServiceImpl implements QuotationService {
 		long pricePerMeterCumul = 0;
 		long annonceTotalCount = 0;
 		for (int page = 1; page <= 4; page++) {
-			log.info("Fetching page " + page);
 			HTTPRequest request = new HTTPRequest(new URL(
 					"http://ws.seloger.com/search.xml" +
 					"?cp=75&idtt=2&idtypebien=1&tri=d_dt_crea&SEARCHpg=" + page));

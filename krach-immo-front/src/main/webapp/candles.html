@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+ @author Sébastien Chatel
+ @since 29 October 2013
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Marché immobilier parisien</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+function drawChart() {
+	var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
+	var data = new google.visualization.DataTable();
+	data.addColumn('date');
+	data.addColumn('number');
+	data.addColumn('number');
+	data.addColumn('number');
+	data.addColumn('number');
+	var maxDate = new Date();
+	maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate() + 1);
+	var minDate = new Date();
+	minDate.setTime(maxDate.getTime() - (90 * 24 * 60 * 60 * 1000));
+	var options = {
+		title: 'Evolution immo parisien',
+		vAxis: {title: 'Prix €/m²'},
+		hAxis: {title: 'Date', viewWindow: {min: minDate, max: today}},
+		candlestick: {
+			fallingColor: {fill: 'red', stroke: 'black', strokeWidth: 1},
+			risingColor:  {fill: 'green', stroke: 'black', strokeWidth: 1}
+		},
+		colors: ['black','black']
+	};
+
+	$.ajax({
+		url: '/api/quotes?days=90',
+		dataType: 'json'
+	}).done(function(json) {
+		var min = null;
+		var open = null;
+		var close = null;
+		var max = null;
+		for (var i = 0; i < json.quotes.length; i++) {
+			var quote = json.quotes[i];
+			var time = new Date(quote.date);
+			var hour = time.getHours();
+			if (hour >= 9 && hour <= 18) {
+				if (min == null || quote.value < min) {
+					min = quote.value;
+				}
+				if (max == null || quote.value > max) {
+					max = quote.value;
+				}
+				if (open == null) {
+					open = quote.value;
+				}
+			}
+			if (hour == 18 || (hour >= 9 && hour <= 18 && i == json.quotes.length - 1)) {
+				close = quote.value;
+				data.addRow([new Date(time.getFullYear(), time.getMonth(), time.getDate()),
+				             min, open, close, max]);
+				close = null;
+				open = null;
+				min = null;
+				max = null;
+			}
+		}
+		chart.draw(data, options);
+	});
+}
+</script>
+</head>
+<body>
+	<div id="chart_div" style="width: 1000px; height: 500px;"></div>
+</body>
+</html>

@@ -21,7 +21,7 @@ function drawChart() {
 	var now = new Date();
 	var options = {
 		title: 'Evolution immo parisien',
-		vAxis: {title: 'Prix €/m²'}
+		vAxis: {title: 'Prix €/m²', viewWindow: {min: 0}}
 	};
 
 	$.ajax({
