@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+	<cron>
+		<url>/services/quotation</url>
+		<description>Refresh data every hour</description>
+		<schedule>every 1 hours synchronized</schedule>
+		<timezone>Europe/Paris</timezone>
+	</cron>
+</cronentries>

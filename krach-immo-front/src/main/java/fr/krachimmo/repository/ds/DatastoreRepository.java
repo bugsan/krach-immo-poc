@@ -45,7 +45,7 @@ public class DatastoreRepository implements Repository {
 	@Override
 	@SuppressWarnings("deprecation")
 	public List<Quote> findAllQuotesFromDate(Date fromDate) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(TimeZone.getTimeZone("Europe/Paris"));
 		String dateToUse = df.format(fromDate);
 		PreparedQuery query = this.datastoreService.prepare(
@@ -57,11 +57,12 @@ public class DatastoreRepository implements Repository {
 		for (Entity entity : query.asIterable()) {
 			Quote quote = new Quote();
 			quote.setDate(entity.getKey().getName());
-			quote.setPriceStudio(((Number) entity.getProperty("studio")).intValue());
-			quote.setPrice2Pieces(((Number) entity.getProperty("2pieces")).intValue());
-			quote.setPrice3Pieces(((Number) entity.getProperty("3pieces")).intValue());
-			quote.setPrice4PlusPieces(((Number) entity.getProperty("4+pieces")).intValue());
-			quote.setPriceTotal(((Number) entity.getProperty("total")).intValue());
+//			quote.setPriceStudio(((Number) entity.getProperty("studio")).intValue());
+//			quote.setPrice2Pieces(((Number) entity.getProperty("2pieces")).intValue());
+//			quote.setPrice3Pieces(((Number) entity.getProperty("3pieces")).intValue());
+//			quote.setPrice4PlusPieces(((Number) entity.getProperty("4+pieces")).intValue());
+//			quote.setPriceTotal(((Number) entity.getProperty("total")).intValue());
+			quote.setPriceTotal(((Number) entity.getProperty("value")).intValue());
 			quotes.add(quote);
 		}
 		return quotes;

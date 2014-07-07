@@ -9,6 +9,8 @@ import com.google.appengine.api.memcache.MemcacheService;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
 /**
  *
@@ -28,5 +30,9 @@ public class AppEngineConfig {
 	@Bean
 	SearchService searchService() {
 		return SearchServiceFactory.getSearchService();
+	}
+	@Bean
+	URLFetchService urlFetchService() {
+		return URLFetchServiceFactory.getURLFetchService();
 	}
 }

@@ -2,12 +2,12 @@
 <backends xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="http://appengine.google.com/backends.xsd">
 	<backend name="job">
-		<class>B1</class>
+		<class>B4</class>
 		<instances>1</instances>
 		<max-concurrent-requests>1</max-concurrent-requests>
 		<options>
 			<dynamic>true</dynamic>
-			<public>true</public>
+			<public>false</public>
 		</options>
 	</backend>
 </backends>

@@ -33,7 +33,7 @@ public class QuoteController {
 		List<Quote> quotes = this.repository.findAllQuotesFromDate(calendar.getTime());
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setCacheControl("public, max-age=3600");
+		headers.setCacheControl("public, max-age=600");
 		return new ResponseEntity<String>(toJsonQuotes(quotes), headers, HttpStatus.OK);
 	}
 
@@ -47,13 +47,14 @@ public class QuoteController {
 			}
 			sb.append('{')
 				.append("\"date\":\"").append(quote.getDate()).append("\",")
-				.append("\"prices\":{")
-				.append("\"studio\":").append(quote.getPriceStudio()).append(",")
-				.append("\"deux\":").append(quote.getPrice2Pieces()).append(",")
-				.append("\"trois\":").append(quote.getPrice3Pieces()).append(",")
-				.append("\"more\":").append(quote.getPrice4PlusPieces()).append(",")
-				.append("\"total\":").append(quote.getPriceTotal())
-				.append("}}");
+				.append("\"value\":").append(quote.getPriceTotal()).append('}');
+//				.append("\"prices\":{")
+//				.append("\"studio\":").append(quote.getPriceStudio()).append(",")
+//				.append("\"deux\":").append(quote.getPrice2Pieces()).append(",")
+//				.append("\"trois\":").append(quote.getPrice3Pieces()).append(",")
+//				.append("\"more\":").append(quote.getPrice4PlusPieces()).append(",")
+//				.append("\"total\":").append(quote.getPriceTotal())
+//				.append("}}");
 			first = false;
 		}
 		sb.append("]}");

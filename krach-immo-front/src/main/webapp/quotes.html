@@ -16,7 +16,7 @@ google.setOnLoadCallback(drawChart);
 function drawChart() {
 	var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 	var data = new google.visualization.DataTable();
-	data.addColumn('date', 'date');
+	data.addColumn('datetime', 'date');
 	data.addColumn('number', 'Prix en €/m²');
 	var now = new Date();
 	var options = {
@@ -30,7 +30,7 @@ function drawChart() {
 	}).done(function(json) {
 		for (var i = 0; i < json.quotes.length; i++) {
 			var quote = json.quotes[i];
-			data.addRow([new Date(quote.date), quote.prices.total]);
+			data.addRow([new Date(quote.date), quote.value]);
 		}
 		chart.draw(data, options);
 	});
